@@ -10,6 +10,8 @@ import edu.eci.arsw.blueprints.model.Point;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
 import edu.eci.arsw.blueprints.persistence.impl.InMemoryBlueprintPersistence;
+
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
@@ -36,7 +38,6 @@ public class InMemoryPersistenceTest {
         ibpp.saveBlueprint(bp);
         
         assertNotNull("Loading a previously stored blueprint returned null.",ibpp.getBlueprint(bp.getAuthor(), bp.getName()));
-        
         assertEquals("Loading a previously stored blueprint returned a different blueprint.",ibpp.getBlueprint(bp.getAuthor(), bp.getName()), bp);
         
     }
@@ -62,13 +63,76 @@ public class InMemoryPersistenceTest {
             ibpp.saveBlueprint(bp2);
             fail("An exception was expected after saving a second blueprint with the same name and autor");
         }
-        catch (BlueprintPersistenceException ex){
-            
-        }
-                
-        
+        catch (BlueprintPersistenceException ignored){}
     }
 
+    @Test
+    public void getExistingBpTest() throws BlueprintNotFoundException {
+        InMemoryBlueprintPersistence ibpp=new InMemoryBlueprintPersistence();
 
-    
+        Point[] pts=new Point[]{new Point(0, 0),new Point(10, 10)};
+        Blueprint bp=new Blueprint("john", "thepaint",pts);
+
+        try {
+            ibpp.saveBlueprint(bp);
+        } catch (BlueprintPersistenceException ex) {
+            fail("Blueprint persistence failed inserting the first blueprint.");
+        }
+
+        assertEquals(bp, ibpp.getBlueprint(bp.getAuthor(), bp.getName()));
+    }
+
+    @Test
+    public void getNonExistingBpTest() {
+        InMemoryBlueprintPersistence ibpp=new InMemoryBlueprintPersistence();
+
+        Point[] pts=new Point[]{new Point(0, 0),new Point(10, 10)};
+        Blueprint bp=new Blueprint("john", "thepaint",pts);
+
+        try {
+            assertNull(ibpp.getBlueprint(bp.getAuthor(), bp.getName()));
+            fail("A non existent blueprint was found D:");
+        } catch (BlueprintNotFoundException e){}
+
+    }
+
+    @Test
+    public void getExistingBpsByAuthorTest() throws BlueprintNotFoundException {
+        InMemoryBlueprintPersistence ibpp=new InMemoryBlueprintPersistence();
+
+        Point[] pts=new Point[]{new Point(0, 0),new Point(10, 10)};
+        Blueprint bp=new Blueprint("john", "thepaint",pts);
+
+        Point[] pts1=new Point[]{new Point(0, 0),new Point(10, 10)};
+        Blueprint bp1=new Blueprint("john", "thepaint2.0",pts1);
+
+        try {
+            ibpp.saveBlueprint(bp);
+            ibpp.saveBlueprint(bp1);
+        } catch (BlueprintPersistenceException ex) {
+            fail("Blueprint persistence failed inserting the first blueprint.");
+        }
+        Set<Blueprint> expectedBps = new HashSet<>(Arrays.asList(bp, bp1));
+
+        assertEquals(expectedBps, ibpp.getBlueprintsByAuthor(bp.getAuthor()));
+    }
+
+    @Test
+    public void getNonExistingBpsByAuthorTest() {
+        InMemoryBlueprintPersistence ibpp=new InMemoryBlueprintPersistence();
+
+        Point[] pts=new Point[]{new Point(0, 0),new Point(10, 10)};
+        Blueprint bp=new Blueprint("john", "thepaint",pts);
+
+        try {
+            ibpp.saveBlueprint(bp);
+        } catch (BlueprintPersistenceException ex) {
+            fail("Blueprint persistence failed inserting the first blueprint.");
+        }
+
+        try {
+            ibpp.getBlueprintsByAuthor("johncito");
+            fail("A non existent blueprint was found D:");
+        } catch (BlueprintNotFoundException e){}
+    }
 }
