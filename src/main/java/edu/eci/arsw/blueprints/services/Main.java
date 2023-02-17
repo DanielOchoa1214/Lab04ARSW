@@ -14,7 +14,7 @@ public class Main {
 
         System.out.println(bpServices.getAllBlueprints());
 
-        Point[] pts=new Point[]{new Point(0, 0),new Point(10, 10)};
+        Point[] pts=new Point[]{new Point(0, 0),new Point(0, 0), new Point(1, 1), new Point(0, 0)};
         Blueprint bp=new Blueprint("john", "thepaint",pts);
         Blueprint bp1=new Blueprint("johncito", "thepaint",pts);
         Blueprint bp2=new Blueprint("johncito", "thepaint2.0",pts);
@@ -23,8 +23,9 @@ public class Main {
         bpServices.addNewBlueprint(bp1);
         bpServices.addNewBlueprint(bp2);
 
+        System.out.println("Probando filtros: " + bpServices.getAllBlueprints());
+
         System.out.println("Searching specific blueprint: " + bpServices.getBlueprint(bp.getAuthor(), bp.getName()));
         System.out.println("Searching blueprint by author: " + bpServices.getBlueprintsByAuthor(bp1.getAuthor()));
-
     }
 }

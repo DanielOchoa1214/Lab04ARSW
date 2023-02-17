@@ -24,9 +24,6 @@ import java.util.*;
 public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
     private final Map<Tuple<String,String>,Blueprint> blueprints=new HashMap<>();
 
-    @Autowired
-    private Filtering filter;
-
     public InMemoryBlueprintPersistence() {
         //load stub data
         Point[] pts=new Point[]{new Point(140, 140),new Point(115, 115)};
